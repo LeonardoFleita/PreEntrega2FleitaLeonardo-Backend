@@ -1,0 +1,33 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {{#each css}}
+      <link rel="stylesheet" href="/css/{{this}}" />
+    {{/each}}
+    <title>{{title}}</title>
+  </head>
+  <body>
+    <header
+      style="text-align: center; background-color: darkolivegreen; color: white"
+    >
+      <h1>{{endPoint}}</h1>
+    </header>
+    <main>
+
+      {{{body}}}
+    </main>
+    {{#if ws}}
+      <script src="/socket.io/socket.io.js"></script>
+
+    {{/if}}
+
+    {{#if useSweetAlert}}
+      <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{/if}}
+
+    {{#each scripts}}
+      <script src="/js/{{this}}"></script>
+    {{/each}}
+  </body>
+</html>

@@ -1,0 +1,49 @@
+<article>
+  <h2>Productos</h2>
+  <div class="formContainer">
+
+    <form action="/realtimeproducts" method="post">
+      <legend>Agregar producto</legend>
+
+      <label for="title">Nombre</label>
+      <input type="text" id="title" name="title" />
+
+      <label for="description">Descripción</label>
+      <input type="text" id="description" name="description" />
+
+      <label for="price">Precio</label>
+      <input type="number" id="price" name="price" />
+
+      <label for="thumbnail">Imagen</label>
+      <input type="text" id="thumbnail" name="thumbnail" />
+
+      <label for="code">Código</label>
+      <input type="text" id="code" name="code" />
+
+      <label for="stock">Stock</label>
+      <input type="number" id="stock" name="stock" />
+
+      <label for="category">Categoría</label>
+      <input type="text" id="category" name="category" />
+      <button type="submit">Enviar</button>
+    </form>
+
+  </div>
+  <div id="productsContainer">
+    {{#each products}}
+      <div class="productCard" id="productCard{{id}}">
+        <h3>{{title}}</h3>
+        <img src="{{thumbnail}}" alt={{title}} />
+        <p style="font-weight: 600">{{description}}</p>
+        <p>Categoría: {{category}}</p>
+        <p>Precio: {{price}}</p>
+        <p>Código: {{code}}</p>
+        <p>Stock: {{stock}}</p>
+        <p>Id: {{id}}</p>
+        <form action="/realtimeproducts/delete" method="post">
+          <button name="id" value={{id}} type="submit">Eliminar</button>
+        </form>
+      </div>
+    {{/each}}
+  </div>
+</article>
