@@ -73,7 +73,7 @@ class ProductManager {
     }
   }
 
-  //El filtro de avaiability devuelve los productos que tengan un stock igual o superior al número solicitado en params
+  //El filtro de avaiability devuelve los productos que tengan un stock igual o superior al número solicitado en params. El sort funciona con "asc" y "desc"
 
   async getProducts(limit, page, sort, category, avaiability) {
     try {
@@ -84,7 +84,7 @@ class ProductManager {
       avaiability &&
         (filter = { ...filter, stock: { $gte: parseInt(avaiability) } });
       let paginateOptions = { limit, page, lean: true };
-      if ((sort && sort === "asc") || sort === "desc") {
+      if (sort && (sort === "asc" || sort === "desc")) {
         paginateOptions.sort = { price: sort === "desc" ? -1 : 1 };
       }
       const products = await ProductModel.paginate(filter, paginateOptions);
