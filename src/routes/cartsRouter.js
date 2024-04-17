@@ -20,7 +20,7 @@ router.get(`/:cId`, async (req, res) => {
   try {
     const cartManager = req.app.get("cartManager");
     const id = req.params.cId;
-    const cart = await cartManager.getCartById(id);
+    const cart = await cartManager.getCartByIdPopulate(id);
     res.status(200).json({ cart });
   } catch (err) {
     res.status(404).json({ error: err.message });

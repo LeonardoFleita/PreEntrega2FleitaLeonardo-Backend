@@ -26,6 +26,23 @@ router.get(`/products`, async (req, res) => {
   });
 });
 
+router.get("/carts/:cId", async (req, res) => {
+  const cartManager = req.app.get("cartManager");
+  const cId = req.params.cId;
+  const cart = await cartManager.getCartByIdPopulate(cId);
+  const products = cart[0].products.map((p) => {
+    return { ...p, totalPrice: p.product.price * p.quantity };
+  });
+  res.render("cart", {
+    title: "Carrito",
+    products: products,
+    ws: true,
+    scripts: ["cart.js"],
+    css: ["styles.css"],
+    endPoint: "Cart",
+  });
+});
+
 router.get(`/realtimeproducts`, async (req, res) => {
   try {
     const productManager = req.app.get("productManager");

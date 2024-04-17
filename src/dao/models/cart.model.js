@@ -1,7 +1,15 @@
 const mongoose = require("mongoose");
 
 const schema = new mongoose.Schema({
-  products: Array,
+  products: {
+    type: [
+      {
+        product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        quantity: Number,
+      },
+    ],
+    default: [],
+  },
 });
 
 schema.virtual("id").get(function () {

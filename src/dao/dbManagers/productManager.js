@@ -73,6 +73,8 @@ class ProductManager {
     }
   }
 
+  //El filtro de avaiability devuelve los productos que tengan un stock igual o superior al número solicitado en params
+
   async getProducts(limit, page, sort, category, avaiability) {
     try {
       limit = limit ? parseInt(limit) : 10;

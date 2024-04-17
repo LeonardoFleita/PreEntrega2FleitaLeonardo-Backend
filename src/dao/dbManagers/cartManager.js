@@ -42,6 +42,22 @@ class CartManager {
     }
   }
 
+  //Hice el siguiente método exclusivo para la petición get del router para no tener que modificar datos en los métodos que utilizan getCartById
+
+  async getCartByIdPopulate(cartId) {
+    try {
+      const findedCart = await CartModel.find({ _id: cartId })
+        .populate("products.product")
+        .lean();
+      if (findedCart.length < 1) {
+        throw new Error(`No existe un carrito con ese id`);
+      }
+      return findedCart;
+    } catch (err) {
+      throw Error(err);
+    }
+  }
+
   async addProductToCart(cartId, productId) {
     try {
       let findedCart = await this.getCartById(cartId);
@@ -52,19 +68,21 @@ class CartManager {
       if (findedProduct.length < 1) {
         throw new Error("No existe ningún producto con ese Id");
       }
-      let previousProduct = await CartModel.find({ "products.id": productId });
+      let previousProduct = await CartModel.find({
+        "products.product": productId,
+      });
       if (previousProduct.length < 1) {
         await CartModel.updateOne(
           { _id: cartId },
           {
             $push: {
-              products: { id: productId, quantity: 1 },
+              products: { product: productId, quantity: 1 },
             },
           }
         );
       } else {
         await CartModel.updateOne(
-          { _id: cartId, "products.id": productId },
+          { _id: cartId, "products.product": productId },
           {
             $inc: {
               "products.$.quantity": 1,
@@ -73,7 +91,7 @@ class CartManager {
         );
       }
 
-      return { id: productId, quantity: 1 };
+      return { product: productId, quantity: 1 };
     } catch (err) {
       throw Error(err);
     }
@@ -99,13 +117,15 @@ class CartManager {
         throw Error();
       }
       let products = findedCart[0].products;
-      let findedProduct = products.find((p) => p.id === productId);
+      let findedProduct = products.find(
+        (p) => p.product.toString() === productId
+      );
       if (!findedProduct) {
         throw new Error("No existe el producto buscado en este carrito");
       }
       await CartModel.findOneAndUpdate(
         { _id: cartId },
-        { $pull: { products: { id: productId } } }
+        { $pull: { products: { product: productId } } }
       );
     } catch (err) {
       throw Error(err);
@@ -118,20 +138,19 @@ class CartManager {
       if (!findedCart) {
         throw Error();
       }
+      console.log(data);
       let formatedData;
       try {
         formatedData = data.map((p) => {
-          if (!p.id || !p.quantity) {
+          if (!p.product || !p.quantity || typeof p.quantity !== "number") {
             throw new Error(
-              "Los datos a ingresar deben conservar la siguiente estructura: [{id: string, quantity: number}...]"
+              "Los datos a ingresar deben conservar la siguiente estructura: [{product: string, quantity: number}...]"
             );
           }
-          return { id: p.id, quantity: p.quantity };
+          return { product: p.product, quantity: p.quantity };
         });
       } catch (err) {
-        throw new Error(
-          "Los datos a ingresar deben conservar la siguiente estructura: [{id: string, quantity: number}...]"
-        );
+        throw new Error(err.message);
       }
       await CartModel.updateOne(
         { _id: cartId },
@@ -149,7 +168,10 @@ class CartManager {
         throw Error();
       }
       let products = findedCart[0].products;
-      let findedProduct = products.find((p) => p.id === productId);
+      console.log(products);
+      let findedProduct = products.find(
+        (p) => p.product.toString() === productId
+      );
       if (!findedProduct) {
         throw new Error("No existe el producto buscado en este carrito");
       }
@@ -161,7 +183,7 @@ class CartManager {
       const updated = await CartModel.findOneAndUpdate(
         { _id: cartId },
         { $set: { "products.$[elem].quantity": data.quantity } },
-        { arrayFilters: [{ "elem.id": productId }], new: true }
+        { arrayFilters: [{ "elem.product": productId }], new: true }
       );
       return updated;
     } catch (err) {

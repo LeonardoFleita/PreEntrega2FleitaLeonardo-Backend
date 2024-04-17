@@ -2,6 +2,8 @@ const { Router } = require("express");
 
 const router = Router();
 
+//Trae los productos según los filtros aplicados
+
 router.get("/", async (req, res) => {
   try {
     const productManager = req.app.get("productManager");
@@ -30,12 +32,16 @@ router.get("/", async (req, res) => {
       prevLink: products.prevPage
         ? `/api/products?limit=${products.limit}&page=${products.prevPage}${
             category ? `&category=${category}` : ""
-          }${avaiability ? `&avaiability=${avaiability}` : ""}`
+          }${avaiability ? `&avaiability=${avaiability}` : ""}${
+            sort ? `&sort=${sort}` : ""
+          }`
         : null,
       nextLink: products.nextPage
         ? `/api/products?limit=${products.limit}&page=${products.nextPage}${
             category ? `&category=${category}` : ""
-          }${avaiability ? `&avaiability=${avaiability}` : ""}`
+          }${avaiability ? `&avaiability=${avaiability}` : ""}${
+            sort ? `&sort=${sort}` : ""
+          }`
         : null,
     };
     res.status(200).json(data);
@@ -43,6 +49,8 @@ router.get("/", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
+//Trae el producto buscado
 
 router.get("/:pId", async (req, res) => {
   try {
@@ -54,6 +62,8 @@ router.get("/:pId", async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 });
+
+//Crea un producto
 
 router.post(`/`, async (req, res) => {
   try {
@@ -75,6 +85,8 @@ router.post(`/`, async (req, res) => {
   }
 });
 
+//Modifica un producto
+
 router.put(`/:pId`, async (req, res) => {
   try {
     const productManager = req.app.get("productManager");
@@ -87,6 +99,8 @@ router.put(`/:pId`, async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 });
+
+//Elimina un producto
 
 router.delete(`/:pId`, async (req, res) => {
   try {
